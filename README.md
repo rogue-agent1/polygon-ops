@@ -1,11 +1,11 @@
-# polygon_ops
+# polygon-ops
 
-polygon_ops - Polygon area, centroid, clipping, and point-in-polygon.
-
-Zero-dependency, single-file Python CLI.
+Polygon area, centroid, point-in-polygon, and clipping.
 
 ## Usage
 
 ```bash
-python3 polygon_ops.py
+python3 polygon_ops.py test
 ```
+
+Zero dependencies. Python 3.8+.
