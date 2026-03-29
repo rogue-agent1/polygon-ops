@@ -1,11 +1,3 @@
-# polygon-ops
-
-Polygon area, centroid, point-in-polygon, and clipping.
-
-## Usage
-
-```bash
-python3 polygon_ops.py test
-```
-
-Zero dependencies. Python 3.8+.
+# polygon_ops
+Polygon — area, perimeter, centroid, point-in-polygon, convexity.
+Single-file Python, zero dependencies.

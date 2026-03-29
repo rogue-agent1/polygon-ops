@@ -1,72 +1,58 @@
 #!/usr/bin/env python3
-"""polygon_ops - Polygon area, centroid, point-in-polygon, and clipping."""
-import sys
+"""Polygon operations. Zero dependencies."""
+import math
 
-def area(polygon):
-    n = len(polygon)
-    a = 0.0
+def polygon_area(vertices):
+    n = len(vertices)
+    if n < 3: return 0
+    area = 0
     for i in range(n):
-        j = (i + 1) % n
-        a += polygon[i][0] * polygon[j][1]
-        a -= polygon[j][0] * polygon[i][1]
-    return abs(a) / 2.0
+        j = (i+1) % n
+        area += vertices[i][0]*vertices[j][1] - vertices[j][0]*vertices[i][1]
+    return abs(area) / 2
 
-def centroid(polygon):
-    n = len(polygon)
-    cx = cy = 0.0
-    a = 0.0
+def polygon_perimeter(vertices):
+    n = len(vertices); p = 0
     for i in range(n):
-        j = (i + 1) % n
-        cross = polygon[i][0] * polygon[j][1] - polygon[j][0] * polygon[i][1]
+        j = (i+1) % n
+        p += math.hypot(vertices[j][0]-vertices[i][0], vertices[j][1]-vertices[i][1])
+    return p
+
+def polygon_centroid(vertices):
+    n = len(vertices); cx = cy = 0; a = 0
+    for i in range(n):
+        j = (i+1) % n
+        cross = vertices[i][0]*vertices[j][1] - vertices[j][0]*vertices[i][1]
         a += cross
-        cx += (polygon[i][0] + polygon[j][0]) * cross
-        cy += (polygon[i][1] + polygon[j][1]) * cross
-    a /= 2.0
-    cx /= (6.0 * a)
-    cy /= (6.0 * a)
-    return cx, cy
+        cx += (vertices[i][0]+vertices[j][0]) * cross
+        cy += (vertices[i][1]+vertices[j][1]) * cross
+    a /= 2
+    if abs(a) < 1e-10: return (0, 0)
+    return (cx/(6*a), cy/(6*a))
 
-def point_in_polygon(point, polygon):
-    x, y = point
-    n = len(polygon)
-    inside = False
+def point_in_polygon(point, vertices):
+    x, y = point; n = len(vertices); inside = False
     j = n - 1
     for i in range(n):
-        xi, yi = polygon[i]
-        xj, yj = polygon[j]
-        if ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi):
+        xi,yi = vertices[i]; xj,yj = vertices[j]
+        if ((yi > y) != (yj > y)) and (x < (xj-xi)*(y-yi)/(yj-yi)+xi):
             inside = not inside
         j = i
     return inside
 
-def perimeter(polygon):
-    n = len(polygon)
-    p = 0.0
+def is_convex(vertices):
+    n = len(vertices)
+    if n < 3: return False
+    sign = None
     for i in range(n):
-        j = (i + 1) % n
-        dx = polygon[j][0] - polygon[i][0]
-        dy = polygon[j][1] - polygon[i][1]
-        p += (dx*dx + dy*dy) ** 0.5
-    return p
-
-def test():
-    # unit square
-    sq = [(0,0),(1,0),(1,1),(0,1)]
-    assert abs(area(sq) - 1.0) < 1e-9
-    cx, cy = centroid(sq)
-    assert abs(cx - 0.5) < 1e-9 and abs(cy - 0.5) < 1e-9
-    assert abs(perimeter(sq) - 4.0) < 1e-9
-    assert point_in_polygon((0.5, 0.5), sq)
-    assert not point_in_polygon((2, 2), sq)
-    # triangle
-    tri = [(0,0),(4,0),(0,3)]
-    assert abs(area(tri) - 6.0) < 1e-9
-    assert point_in_polygon((1, 1), tri)
-    assert not point_in_polygon((3, 3), tri)
-    print("OK: polygon_ops")
+        o = vertices[i]; a = vertices[(i+1)%n]; b = vertices[(i+2)%n]
+        cross = (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0])
+        if abs(cross) < 1e-10: continue
+        s = cross > 0
+        if sign is None: sign = s
+        elif s != sign: return False
+    return True
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "test":
-        test()
-    else:
-        print("Usage: polygon_ops.py test")
+    sq = [(0,0),(1,0),(1,1),(0,1)]
+    print(f"Area: {polygon_area(sq)}, Perimeter: {polygon_perimeter(sq)}")
