@@ -1,14 +1,11 @@
-# polygon-ops
+# polygon_ops
 
-Polygon operations - area, centroid, point-in-polygon, clipping, and boolean ops
+polygon_ops - Polygon area, centroid, clipping, and point-in-polygon.
+
+Zero-dependency, single-file Python CLI.
 
 ## Usage
 
 ```bash
-python3 polygon_ops.py --help
+python3 polygon_ops.py
 ```
-
-## Features
-
-- Zero dependencies (Python 3.8+ stdlib only)
-- Single file implementation
